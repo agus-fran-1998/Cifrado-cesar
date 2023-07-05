@@ -1,0 +1,155 @@
+Este archivo de texto se crea con el fin de realizar todo tipo de anotaciones de comentarios sobre etiquetas, comandos, funciones, etc... y no andar ensuciando los codigos.
+
+HTML:
+
+autocomplete="off": evita que haya un historial de cosas que hayamos cargado antes.
+
+spellcheck="false": evita que las palabras se subrayen en rojo cuando estan mal escritas.
+
+//<script src="index.js" type="text/javascript" defer></script>
+es una forma de cargar el archivo js despues de que se cargue la pagina aunque este puesto en el encabezado (head) ya que esta en diferido "defer".
+
+
+
+CSS:
+
+box-shadow: npx npx npx npx rgb( n n n / n%);
+
+offset-x, offset-y: cuanto se mueve la sombra en los ejes.
+blur-radius: que tan borrosa es la sombra.
+spread-radius: cuanto se expande la sombra.
+color: por lo general suelen ser colores oscuros.
+
+
+grid-template-columns: 1fr 30px; 
+que tome todo el ancho necesario (con 1fr) y 30px para el valor.
+
+
+::-webkit-slider-thumb: representa el selector que el usuario puede mover a lo largo de la ranura de un elemento <input> con type="range" para modificar su valor numérico.
+con esta pseudoclase le doy estilos a la bolita del medio.
+
+
+JS:
+
+e: abreviatura para representar el concepto de elemento.
+
+
+ e.preventDefault();
+ evita q la etiqueta submit envie el formulario, que es el comportamiento que trae por defecto.
+
+
+ resultado.innerHTML = ''; 
+ borra el "resultado" que tenga en ese momento ya que si ya existe alguna encriptacion cuando quiera hacer una nueva voy a tener que borrar la que ya estaba en ese momento.
+
+const wordArray = [...inputOriginal.value.toUpperCase()];
+obtengo el inputOriginal y lo transformo en un array de mayusculas para que cuando busquemos una letra en nuestro alfabeto ya tengamos las mismas letras y las podamos comparar.
+
+
+currentLetterIndex: corresponde el index actual(la posicion) de la palabra que queremos encriptar.
+wordArray: array de la palabra que queremos encriptar.
+
+como vamos a estar encriptando caracter por caracter necesitamos un array y el index en el lugar que estemos encriptando.
+
+
+funcion recursiva: es una funcion que se llama asi misma y resuelve partes cada vez mas simples del mismo problema, hasta que se encuentra con un caso base(la parte mas simplificada de todo el problema) y se termina la recursion y podemos dar por finalizado el problema.
+
+
+if(wordArray.length === currentLetterIndex) return;
+creando "caso base": esto nos va a permitir terminar la recursion y evitar que sea uan recursion infinita.
+cuando el largo de nuestro array sea igual al index actual(en este caso estariamos en la ultima letra de nuestro array, que seria la palabra original, que posteriormente va a ser codificada) debemos cortar la recursion(por eso usamos return) y no volver a llamar a la funcion.
+
+
+inputOriginal.value = inputOriginal.value.substring(1);
+le saco una letra al valor original(la primera). para luego poder hacer la animacion de sacar una letra y poner otra por debajo.
+
+
+const spanChar = document.createElement("span");
+este elemento que estoy creando lo voy a usar para animar cada uno de los caracteres que vamos poniendo en el "resultado".
+
+resultado.appendChild(spanChar);
+vamos agregando las letras al resultado(appendChild). cada uno de estos caracteres son los que se van a ir pintando de color verde y van a ir aparaeciendo por debajo.
+
+
+
+
+codigo explicado por partes:
+
+const charSinCodificar = wordArray[currentLetterIndex];
+    spanChar.innerHTML = alfabeto.includes(charSinCodificar) ? 
+    alfabeto[(alfabeto.indexOf(charSinCodificar) + parseInt(rango.value))
+    % alfabeto.length] :
+    charSinCodificar
+    printChar(currentLetterIndex + 1, wordArray);
+
+1A_ const charSinCodificar = wordArray[currentLetterIndex];
+es el caracter en el que nos encontramos actualmente en nuestro array de palabras.
+
+2A_ spanChar.innerHTML = alfabeto.includes(charSinCodificar);
+al span que creamos anteriormente le vamos a poner dentro el caracter ya encriptado. 
+
+3A_ ? : para eso le preguntamos al alfabeto si incluye a este caracter para no encriptar todo tipo de caracteres especiales.
+
+
+4A_ alfabeto[(alfabeto.indexOf(charSinCodificar) 
+si esta, buscamos dentro del alfabeto, primero el indice del caracter sin codificar. 
+
+5A_ + parseInt(rango.value))
+A eso le sumamos el rango, es decir, si estamos en la A y le sumamos 1 llegamos a la B.
+
+parseInt: es porque el rango nos devuelve valores de tipo string y lo tenemos que transformar en numeros. 
+
+6A_ % alfabeto.length]
+si llegamos a la Z y le sumanos 1 volvemos al inicio del alfabeto ya que es el final del array y tiene que volver a comenzar.
+
+7A_ : charSinCodificar
+si el caracter no esta dentro del alfabeto solo lo devolvemos porque lo vamoa a imprimir sin codificar.
+
+
+8A_ printChar(currentLetterIndex + 1, wordArray);
+volvemos a llamar a la funcion(se llama dentro de si misma) pero esta vez nos movemos un lugar en el array de la palabra.
+ej: si la palabra es "HOLA" comenzariamos siempre en el indice cero [0 = H] y nos iriamos moviendo de a un indice hasta llegar al final de la cadena de caracteres que conforman la palabra y se termine la recursividad.
+    CARACTERES: H O L A 
+    INDICES:    0 1 2 3 
+
+
+- los espacios funcionan como espacios(no se traducen).
+- los caracteres especiales tampoco son afectados.
+- al ingresar una Z se devuelve una A. 
+
+
+
+animacion de los caracteres:
+una vez que tenemos nuestro "span" queremos mostrar diferentes letras al azar y una vez terminada la animacion color la letra ya encriptada. Para eso usamos una "promesa".
+
+promesas: es un valor que puede estar disponible en el futuro.
+
+¿por que usamos una promesa?.
+queremos esperar a que se anime el caracter para colocar la letra ya encriptada.
+
+setInterval: es una funcion que ejecuta un fragmento de codigo de manera repetitiva durante un cierto intervalo de tiempo.
+dentro del intervalo queremos animar los caracteres, cuando se terminen de animar, la promesa estara cumplida y  utilizaremos "resolve" (funcion que proporciona promise) para decirle a nuestra otra funcion que ya se termino de ejecutar la animacion y que puede mostrar el caracter ya encriptado.
+
+
+spanChar.innerHTML = alfabeto[Math.floor(Math.random() = alfabeto.length)];
+para la animacion queremos cambiar el contenido del span que acabamos de crear por una letra aleatoria varias veces seguidas.
+para esto, buscamos un caracter aleatorio dentro de nuestro array de alfabeto, usamos Math.random y lo multiplicamos por el tamaño del array(length), eso nos devuelve un valor aleatorio entre 0 y el length del alfabeto, pero al ser un valor decimal usamos Math.floor para redondearlo.
+
+cambioDeLetra++;
+le sumamos 1 a "cambioDeLetra" que es lo que vamos a usar para determinar cuando queremos finalizar la animacion dependiendo de cuantas veces movimos las letras.
+
+
+ if (cambioDeLetra == 3) {
+        clearInterval(intervalo);
+        resolve;
+        }
+lo seteamos en 3(movimientos de letra) y una vez que se cambio 3 veces la letra podemos terminar el intervalo y resolver(finalizar la promesa) para que se anime el siguiente caracter.
+
+animeteChar(spanChar)
+queremos hacer la animacion de nuestro span.
+podemos ejecutar el codigo que sigue solo despues de que se cumplio nuestra promesa
+
+
+.then(  () => {
+            //codigo
+        })
+con "then" podemos esperar a que se ejecute toda la animacion y luego colocar el caracter ya encriptado.
